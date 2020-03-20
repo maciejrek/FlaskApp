@@ -9,8 +9,17 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+  APP_SECRET_KEY: ${{ secrets.APP_SECRET_KEY }}
+  APPLICATION_SETTINGS: ${{ secrets.APPLICATION_SETTINGS }}
+  MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
+  MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+  FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
+  DATABASE_URI: ${{ secrets.DATABASE_URI }}
+
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
 
@@ -36,3 +45,24 @@ jobs:
       run: |
         pip install pytest
         python -m pytest
+
+#  build:
+#    needs: test
+#
+#    runs-on: ubuntu-latest
+#    if: github.event_name == 'push'
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: BuildImage
+#        run: |
+#          docker build . --file Dockerfile --tag flaskapp
+#          docker images
+#
+#      - name: PushImage
+#        run: |
+#          echo "${{ secrets.DOCKER_PWD }}" | docker login docker.pkg.github.com -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+#          docker images
+#          docker tag flaskapp ${{ secrets.DOCKER_LOGIN }}/flaskapp
+#          docker images
+#          docker push ${{ secrets.DOCKER_LOGIN }}/flaskapp
